@@ -25,10 +25,10 @@ class Teapot(Device):
         super().__init__(status)
         self.temperature = temperature
 
-    def return_temperature(self):
-        print(self.temperature)
+    def get_inf(self):
+        print("Температура воды в чайнике = " + str(self.temperature))
 
-    def temperature_change(self):
+    def boil_water(self):
         while True:
             sleep(1)
             if self.status == "on":
@@ -56,29 +56,14 @@ class Sensor(Device):
             print("Текущая влажность" + str(self.humidity))
 
 
-def temperature_change():
-    while True:
-        global teapot
-        sleep(1)
-        if teapot.status == "on":
-            print("yes")
-            teapot.temperature += 10
-        else:
-            teapot.temperature -= 1
-            print(teapot.temperature)
-        if teapot.temperature == 100:
-            print("Вода в чайнике вскипела")
-            teapot.switch()
-
-
 if __name__ == "__main__":
     teapot = Teapot()
     print(teapot.status)
-    tc = multiprocessing.Process(target=temperature_change, args=())
-    tc.start()
     input("Нажмите enter чтобы включить чайник\n")
     teapot.switch()
+    tc = multiprocessing.Process(target=teapot.boil_water, args=())
+    tc.start()
     print(teapot.status)
     input("Нажмите enter чтобы увидеть температуру воды\n")
-    teapot.return_temperature()
+    teapot.get_inf()
 
