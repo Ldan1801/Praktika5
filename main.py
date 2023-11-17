@@ -1,52 +1,68 @@
-from time import sleep
-import multiprocessing
-import sys
+from my_module import Input
+
 
 class Device:
-    def __init__(self, status="off"):
+    def __init__(self, name, room, status="выкл"):
         self.status = status
+        self.name = name
+        self.room = room
 
     def switch(self):
-        if self.status == "off":
-            self.status = "on"
+        if self.status == "выкл.":
+            print("Устройство включено")
+            self.status = "вкл"
         else:
-            self.status = "off"
+            print("Устройство выключено")
+            self.status = "выкл"
 
 
 class LightBulb(Device):
-    def __init__(self, room, number=1, status="off"):
-        super().__init__(status)
+    def __init__(self, room, number=1,):
+        super().__init__("Лампочка", room)
         self.room = room
         self.number = number
 
 
 class Teapot(Device):
-    def __init__(self, temperature=23.0, status="off"):
-        super().__init__(status)
+    def __init__(self, temperature=23.0, room="Кухня"):
+        super().__init__("Чайник", room)
         self.temperature = temperature
 
     def get_inf(self):
         print("Температура воды в чайнике = " + str(self.temperature))
 
-    def boil_water(self):
-        while True:
-            sleep(1)
-            if self.status == "on":
-                print("yes")
-                self.temperature += 10
-            else:
-                self.temperature -= 1
-                print(self.status)
-            if self.temperature == 100:
-                print("Вода в чайнике вскипела")
-                self.status = "off"
+    def switch(self):
+        print("Чайник включён")
+        self.status = "вкл"
+        self.temperature = 100
+        self.status = 'выкл'
+        print("Вода в чайнике вскипела")
 
+
+class StereoSpeaker(Device):
+    def __init__(self, volume=5, room="Зал"):
+        super().__init__("Музыкальная колонка", room)
+        self.volume = volume
+
+    def change_volume(self, flag):
+        if flag == 2:
+            if self.volume < 10:
+                self.volume += 1
+                print("Текущая громкость: ", self.volume)
+            else:
+                print("Громкость максимальная (10)")
+        elif flag == 1:
+            if self.volume > 0:
+                self.volume -= 1
+                print("Текущая громкость: ", self.volume)
+            else:
+                print("Текущая громкость минимальная (0)")
 
 
 class Sensor(Device):
-    def __int__(self, room="Hall", temperature=23, humidity=30, status="on"):
-        super().__init__(status)
-        self.temperature = 23
+    def __init__(self, room="Зал", temperature=23, humidity=30):
+        super().__init__("Сенсор", room, "Вкл")
+        self.temperature = temperature
         self.humidity = humidity
         self.room = room
 
@@ -56,14 +72,41 @@ class Sensor(Device):
             print("Текущая влажность" + str(self.humidity))
 
 
+class RobotVacuumCleaner(Device):
+    def __init__(self, room="Спальая"):
+        super().__init__("Робот пылесос", room)
+
+    def switch(self):
+        self.status = "on"
+        print("Квартира убранна")
+        self.status = "off"
+
+
+class Terminal:
+
+    @staticmethod
+    def menu():
+        print("Здравствуте, вы находитесь в системе умный дом."
+              "Выберете устройсто из досупны:\n"
+              "1)Лампочки\n"
+              "2)Чайник\n"
+              "3)Робот-пылесос\n"
+              "4)Музыкальная колонка\n"
+              "5)Датчик влажности и температуры")
+        command = Input.command(5)
+
+
+
+
 if __name__ == "__main__":
     teapot = Teapot()
-    print(teapot.status)
-    input("Нажмите enter чтобы включить чайник\n")
-    teapot.switch()
-    tc = multiprocessing.Process(target=teapot.boil_water, args=())
-    tc.start()
-    print(teapot.status)
-    input("Нажмите enter чтобы увидеть температуру воды\n")
-    teapot.get_inf()
+    light1 = LightBulb("зал", 1)
+    light2 = LightBulb("зал", 2)
+    light3 = LightBulb("спальная", 1)
+    light4 = LightBulb("кухня", 1)
+    sensor = Sensor()
+    robot_vacuum_cleaner = RobotVacuumCleaner()
+    stereo_speaker = StereoSpeaker()
+    num = Input.int()
+    print(num)
 
