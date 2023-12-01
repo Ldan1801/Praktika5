@@ -110,7 +110,7 @@ class Sensor(Device):
         print("3) Получить информацию с датчика")
 
 
-class RobotVacuumCleaner(Device):
+class RobotVacumCleaner(Device):
     def __init__(self, room="Спальая"):
         super().__init__("Робот пылесос", room)
 
@@ -161,6 +161,6 @@ if __name__ == "__main__":
     light4 = LightBulb("кухня", 1)
     teapot = Teapot()
     sensor = Sensor()
-    robot_vacuum_cleaner = RobotVacuumCleaner()
+    robot_vacuum_cleaner = RobotVacumCleaner()
     stereo_speaker = StereoSpeaker()
     Terminal.menu()
