@@ -3,34 +3,48 @@ from my_module import Input
 
 
 class SmartHouse:
+    """Класс хранящий список дивайсов и создающий новые """
     __devices = []
     __numbers = {}
 
     @classmethod
-    def new_device(cls, type, room):
-        if type == 1:
-            cls.__devices.append(LightBulb(room, SmartHouse.check_number(type, room)))
-        elif type == 2:
-            cls.__devices.append(Teapot(room, SmartHouse.check_number(type, room)))
-        elif type == 3:
-            cls.__devices.append(Sensor(room, SmartHouse.check_number(type, room)))
-        elif type == 4:
-            cls.__devices.append(RobotVacumCleaner(room, SmartHouse.check_number(type, room)))
-        elif type == 5:
-            cls.__devices.append(StereoSpeaker(room, SmartHouse.check_number(type, room)))
+    def new_device(cls, kind, room):
+        """Функция для создания нового дивайса"""
+        if kind == 1:
+            cls.__devices.append(LightBulb
+                                 (room, SmartHouse.check_number(kind, room)))
+        elif kind == 2:
+            cls.__devices.append(Teapot
+                                 (room, SmartHouse.check_number(kind, room)))
+        elif kind == 3:
+            cls.__devices.append(Sensor
+                                 (room, SmartHouse.check_number(kind, room)))
+        elif kind == 4:
+            cls.__devices.append(RobotVacumCleaner
+                                 (room, SmartHouse.check_number(kind, room)))
+        elif kind == 5:
+            cls.__devices.append(StereoSpeaker
+                                 (room, SmartHouse.check_number(kind, room)))
 
     @classmethod
     def devices(cls):
+        """Функция для возвращеня списка дивайсов"""
         return cls.__devices
 
     @classmethod
-    def check_number(cls, type, room):
-        type = str(type)
+    def check_number(cls, kind, room):
+        """Функуия для проверки количества устройств в одной комнате """
+        kind = str(kind)
         try:
-            cls.__numbers[type + room] += 1
+            cls.__numbers[kind + room] += 1
         except KeyError:
-            cls.__numbers[type + room] = 1
-        return cls.__numbers[type + room]
+            cls.__numbers[kind + room] = 1
+        return cls.__numbers[kind + room]
+
+    @classmethod
+    def remove_device(cls, index):
+        """Функция удаляющая дивайс из списка """
+        del cls.__devices[index]
 
 
 class Device:
@@ -46,14 +60,13 @@ class Device:
         if self.status == "выключен(а)":
             self.status = "включен(а)"
             return "Устройство включено"
-        else:
-            self.status = "выключен(а)"
-            return "Устройство выключено"
+        self.status = "выключен(а)"
+        return "Устройство выключено"
 
     def get_status(self):
         """Функция пишуща статус устройства"""
         return (self.name + " находящийся в комнате "
-              + self.room + " сейчас" + self.status)
+                + self.room + " сейчас " + self.status)
 
     @staticmethod
     def get_functions():
@@ -87,11 +100,13 @@ class Teapot(Device):
 
     def function(self):
         """Функция вызывающая дополнительную функцию устройства"""
-        self.get_inf()
+        return self.get_inf()
 
-    def get_functions(self):
+    @staticmethod
+    def get_functions():
         """Функция пишущая функции устройства"""
-        return super().get_functions() + "\n3) Узнать температуру воды в чайнике"
+        return (super(Teapot, Teapot).get_functions()
+                + "\n3) Узнать температуру воды в чайнике")
 
 
 class StereoSpeaker(Device):
@@ -101,23 +116,24 @@ class StereoSpeaker(Device):
         self.volume = 5
 
     def turn_up_the_volume(self):
+        """Функция увеличивающая громкость музакльной колонки"""
         if self.volume < 10:
             self.volume += 1
             return "Текущая громкость: ", self.volume
-        else:
-            return "Громкость максимальная (10)"
+        return "Громкость максимальная (10)"
 
     def turn_down_the_volume(self):
+        """Функция уменьшающая громкость музыкальной колонки"""
         if self.volume > 0:
             self.volume -= 1
             return "Текущая громкость: ", self.volume
-        else:
-            return "Текущая громкость минимальная (0)"
+        return "Текущая громкость минимальная (0)"
 
-    def get_functions(self):
+    @staticmethod
+    def get_functions():
         """Функция пишущая функции устройства"""
-        super().get_functions()
-        print("3) Изменить громкость")
+        return (super(StereoSpeaker, StereoSpeaker).get_functions()
+                + "\n3) Изменить громкость")
 
 
 class Sensor(Device):
@@ -130,19 +146,20 @@ class Sensor(Device):
 
     def get_inf(self):
         """Функция возвращающая текущую температуру и влажность"""
-        if self.status == "on":
-            print("Текущая темпрература" + str(self.temperature))
-            print("Текущая влажность" + str(self.humidity))
-        else:
-            print("В начале необходимо включить устройство")
+        if self.status == "включен(а)":
+            return ("Текущая темпрература: " + str(self.temperature)
+                    + "\nТекущая влажность: " + str(self.humidity))
+        return "В начале необходимо включить устройство"
 
     def function(self):
         """Функция вызывающая дополнительную функцию устройства"""
-        self.get_inf()
+        return self.get_inf()
 
-    def get_functions(self):
+    @staticmethod
+    def get_functions():
         """Функция пишущая функции устройства"""
-        return super().get_functions() + "\n3) Получить информацию с датчика"
+        return (super(Sensor, Sensor).get_functions()
+                + "\n3) Получить информацию с датчика")
 
 
 class RobotVacumCleaner(Device):
@@ -152,9 +169,9 @@ class RobotVacumCleaner(Device):
 
     def switch(self):
         """Функция меняющая статус устройства"""
-        self.status = "on"
-        print("Квартира убранна")
-        self.status = "off"
+        self.status = "включен(а)"
+        self.status = "выключена"
+        return "Квартира убранна. Устройство выключено"
 
 
 class Terminal:
@@ -166,16 +183,19 @@ class Terminal:
         while True:
             print("Выберите действие, которое вы хотите совершить:"
                   "\n1)Перейти к управлению устройствами"
-                  "\n2)Добавить новое устройство в систему")
-            command = Input.command(2)
+                  "\n2)Добавить новое устройство в систему"
+                  "\n3)Удалить устройство из системы")
+            command = Input.command(3)
             if command == 1:
                 Terminal.device_management()
             if command == 2:
                 Terminal.append_new_device()
-
+            if command == 3:
+                Terminal.delite_device()
 
     @staticmethod
     def append_new_device():
+        """Функция для добавления нового устройсва в систему"""
         while True:
             print("Выберите тип устройства"
                   "\n1)Лампочка"
@@ -195,11 +215,28 @@ class Terminal:
             break
 
     @staticmethod
+    def delite_device():
+        """Функция для удаления устройства из системы"""
+        while True:
+            print("Выберите устройство, которое хотите удалить")
+            for device in range(len(SmartHouse.devices())):
+                print(str(device + 1) + ") "
+                      + SmartHouse.devices()[device].name + " ("
+                      + SmartHouse.devices()[device].room
+                      + ") (" + str(SmartHouse.devices()[device].number) + ")")
+            command = Input.command(len(SmartHouse.devices()))
+            if not command:
+                break
+            SmartHouse.remove_device(command-1)
+
+    @staticmethod
     def device_management():
+        """Функция для управления устройствами"""
         while True:
             print("Выберите доступное устройство")
             for device in range(len(SmartHouse.devices())):
-                print(str(device+1) + ") " + SmartHouse.devices()[device].name + " ("
+                print(str(device+1) + ") "
+                      + SmartHouse.devices()[device].name + " ("
                       + SmartHouse.devices()[device].room
                       + ") (" + str(SmartHouse.devices()[device].number) + ")")
             command = Input.command(len(SmartHouse.devices()))
@@ -213,11 +250,11 @@ class Terminal:
                 if not command:
                     break
                 if command == 1:
-                    print(SmartHouse.devices()[device].switch)
+                    print(SmartHouse.devices()[device].get_status())
                 elif command == 2:
-                    print(SmartHouse.devices()[device].get_status)
+                    print(SmartHouse.devices()[device].switch())
                 elif "function" in dir(SmartHouse.devices()[device]):
-                    print(SmartHouse.devices()[device].function)
+                    print(SmartHouse.devices()[device].function())
                 else:
                     print("Комманда введена не верно")
 
@@ -225,5 +262,8 @@ class Terminal:
 if __name__ == "__main__":
     SmartHouse.new_device(1, "Зал")
     SmartHouse.new_device(1, "Зал")
+    SmartHouse.new_device(2, "Кухня")
+    SmartHouse.new_device(3, "Зал")
+    SmartHouse.new_device(4, "Зал")
+    SmartHouse.new_device(5, "Зал")
     Terminal.menu()
-    print(SmartHouse.devices())
