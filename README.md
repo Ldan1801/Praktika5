@@ -1,4 +1,4 @@
-# Hellow!
+# Hello!
 This is a program for describing the work of a smart home. A smart home
 contains a set of devices, each of which is characterized by its
 own functions and is able to provide data on request.
